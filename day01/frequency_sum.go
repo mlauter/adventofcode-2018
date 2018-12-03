@@ -65,10 +65,6 @@ func calibrate(curFreq int, freqMap map[int]bool, f io.ReadSeeker) (int, error) 
 	return curFreq, nil
 }
 
-func rewindInput(handle io.Reader) {
-
-}
-
 func main() {
 	args := os.Args[1:]
 	if len(args) != 1 {
