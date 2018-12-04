@@ -1,14 +1,13 @@
 package main
 
 import (
-	"testing"
-	"bufio"
 	"strings"
+	"testing"
 )
 
-func TestOne(t *testing.T) {
+func TestDay01Sum(t *testing.T) {
 	tests := []struct {
-		Input string
+		Input  string
 		Expect int
 	}{
 		{`
@@ -37,8 +36,7 @@ func TestOne(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		scanner := bufio.NewScanner(strings.NewReader(test.Input))
-		actual, err := frequencySum(scanner)
+		actual, err := frequencySum(strings.NewReader(test.Input))
 		if err != nil {
 			t.Errorf("Got error %s", err)
 		}
@@ -48,9 +46,9 @@ func TestOne(t *testing.T) {
 	}
 }
 
-func TestTwo(t * testing.T) {
+func TestDay01Calibrate(t *testing.T) {
 	tests := []struct {
-		Input string
+		Input  string
 		Expect int
 	}{
 		{`

@@ -1,20 +1,20 @@
 package main
 
-import(
-	"os"
-	"log"
+import (
 	"bufio"
-	"strconv"
 	"fmt"
 	"io"
+	"log"
+	"strconv"
 )
 
 // Sum the elements in the scanner
-func frequencySum(s *bufio.Scanner) (int, error) {
+func frequencySum(f io.ReadSeeker) (int, error) {
+	s := bufio.NewScanner(f)
 	sum := 0
 	for s.Scan() {
 		if s.Text() == "" {
-			continue;
+			continue
 		}
 		freq, err := strconv.Atoi(s.Text())
 		if err != nil {
@@ -39,7 +39,7 @@ func calibrate(curFreq int, freqMap map[int]bool, f io.ReadSeeker) (int, error) 
 
 	for s.Scan() {
 		if s.Text() == "" {
-			continue;
+			continue
 		}
 		freq, err := strconv.Atoi(s.Text())
 		if err != nil {
@@ -65,21 +65,8 @@ func calibrate(curFreq int, freqMap map[int]bool, f io.ReadSeeker) (int, error) 
 	return curFreq, nil
 }
 
-func main() {
-	args := os.Args[1:]
-	if len(args) != 1 {
-		log.Fatal("Usage: frequency_sum INFILE")
-	}
-
-	path := args[0]
-	f, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("Cannot open input file %s", path)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-	sum, err := frequencySum(scanner)
+func runDay01(f io.ReadSeeker) {
+	sum, err := frequencySum(f)
 	if err != nil {
 		log.Fatalf("Unable to sum inputs: %s", err)
 	}
