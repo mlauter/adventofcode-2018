@@ -33,7 +33,11 @@ func frequencySum(f io.ReadSeeker) (int, error) {
 // int - the first frequency to be reached twice
 // err - an error if there is one
 func calibrate(curFreq int, freqMap map[int]bool, f io.ReadSeeker) (int, error) {
-	f.Seek(0, 0)
+	_, err := f.Seek(0, 0)
+	if err != nil {
+		return 0, err
+	}
+
 	s := bufio.NewScanner(f)
 	calibrated := false
 
@@ -47,7 +51,7 @@ func calibrate(curFreq int, freqMap map[int]bool, f io.ReadSeeker) (int, error) 
 		}
 		curFreq += freq
 
-		if freqMap[curFreq] == true {
+		if freqMap[curFreq] {
 			calibrated = true
 			break
 		}
