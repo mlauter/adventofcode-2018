@@ -8,7 +8,6 @@ import (
 	"strconv"
 )
 
-// Sum the elements in the scanner
 func frequencySum(f io.ReadSeeker) (int, error) {
 	s := bufio.NewScanner(f)
 	sum := 0
@@ -72,14 +71,14 @@ func calibrate(curFreq int, freqMap map[int]bool, f io.ReadSeeker) (int, error) 
 func runDay01(f io.ReadSeeker) {
 	sum, err := frequencySum(f)
 	if err != nil {
-		log.Fatalf("Unable to sum inputs: %s", err)
+		log.Fatalf("day01 frequencySum: Unable to sum inputs: %s", err)
 	}
 
 	freqMap := make(map[int]bool)
 	freqMap[0] = true
 	freq, err := calibrate(0, freqMap, f)
 	if err != nil {
-		log.Fatalf("Unable to calibrate: %s", err)
+		log.Fatalf("day01 calibrate: Unable to calibrate: %s", err)
 	}
 
 	fmt.Printf("Q1: %d\n", sum)
