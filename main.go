@@ -14,6 +14,7 @@ const usage string = "Usage: adventofcode DAY INFILE"
 var dayFuncMap = map[int]func(f io.ReadSeeker){
 	1: runDay01,
 	2: runDay02,
+	3: runDay03,
 }
 
 func main() {
