@@ -7,13 +7,13 @@ import (
 	"testing"
 )
 
-func TestDay03ClaimGetCoordinates(t *testing.T) {
+func TestDay03ClaimInitCoordinates(t *testing.T) {
 	tests := []struct {
 		Input  *claim
 		Expect []tuple
 	}{
 		{
-			&claim{id: 1, xOff: 3, yOff: 2, width: 5, height: 4},
+			&claim{id: 1, xOff: 3, yOff: 2, width: 5, height: 4, coords: []tuple{}},
 			[]tuple{tuple{3, 2}, tuple{3, 3}, tuple{3, 4}, tuple{3, 5},
 				tuple{4, 2}, tuple{4, 3}, tuple{4, 4}, tuple{4, 5},
 				tuple{5, 2}, tuple{5, 3}, tuple{5, 4}, tuple{5, 5},
@@ -22,7 +22,7 @@ func TestDay03ClaimGetCoordinates(t *testing.T) {
 			},
 		},
 		{
-			&claim{id: 2, xOff: 1, yOff: 3, width: 4, height: 4},
+			&claim{id: 2, xOff: 1, yOff: 3, width: 4, height: 4, coords: []tuple{}},
 			[]tuple{tuple{1, 3}, tuple{1, 4}, tuple{1, 5}, tuple{1, 6},
 				tuple{2, 3}, tuple{2, 4}, tuple{2, 5}, tuple{2, 6},
 				tuple{3, 3}, tuple{3, 4}, tuple{3, 5}, tuple{3, 6},
@@ -32,10 +32,10 @@ func TestDay03ClaimGetCoordinates(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		coords := tc.Input.getCoordinates()
+		tc.Input.initCoordinates()
 
 		// would be nice to have a visual representation to print
-		if !reflect.DeepEqual(tc.Expect, coords) {
+		if !reflect.DeepEqual(tc.Expect, tc.Input.coords) {
 			t.Error("day03 claim.getCoordinates failed")
 		}
 	}
@@ -54,6 +54,7 @@ func TestNewClaim(t *testing.T) {
 				yOff:   604,
 				width:  22,
 				height: 23,
+				coords: []tuple{},
 			},
 		},
 	}
@@ -63,6 +64,9 @@ func TestNewClaim(t *testing.T) {
 		if err != nil {
 			t.Fatalf("day03 newClaim encountered unexpected error %v", err)
 		}
+
+		// ignore coords, tested separately
+		c.coords = []tuple{}
 
 		if !reflect.DeepEqual(*c, tc.Expect) {
 			t.Error("day03 newClaim failed")
@@ -83,7 +87,7 @@ func TestConstructFabric(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		fabric := constructFabric(strings.NewReader(tc.Input), 8, 8)
+		fabric := constructFabric(strings.NewReader(tc.Input), 8, 8, &map[int](*claim){})
 		if fabric.overlappingSquares != tc.Expect {
 			t.Errorf("day03 getOverlappingSquareInches expected %d got %d", tc.Expect, fabric.overlappingSquares)
 		}

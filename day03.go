@@ -20,18 +20,16 @@ type claim struct {
 	yOff   int
 	width  int
 	height int
+	coords []tuple
 }
 
-// Return all (i, j) coordinates of square inches within this claim
-func (c *claim) getCoordinates() []tuple {
-	var coords []tuple
+// All (i, j) coordinates of square inches within this claim
+func (c *claim) initCoordinates() {
 	for i := c.xOff; i < (c.xOff + c.width); i++ {
 		for j := c.yOff; j < (c.yOff + c.height); j++ {
-			coords = append(coords, tuple{i, j})
+			c.coords = append(c.coords, tuple{i, j})
 		}
 	}
-
-	return coords
 }
 
 // is this a bad idea?
@@ -80,14 +78,17 @@ func (f *fabric) increment(t tuple) int {
 	return v
 }
 
-func (f *fabric) processClaim(c *claim) {
-	for _, coord := range c.getCoordinates() {
+func (f *fabric) processClaim(c *claim) bool {
+	isCandidate := true
+	for _, coord := range c.coords {
 		v := f.increment(coord)
 
+		isCandidate = isCandidate && (v <= 1)
 		if v == 2 {
 			f.overlappingSquares++
 		}
 	}
+	return isCandidate
 }
 
 func (f *fabric) print() string {
@@ -145,16 +146,20 @@ func newClaim(s string) (*claim, error) {
 		dims[i] = dim
 	}
 
-	return &claim{
+	claim := &claim{
 		id:     dims[0],
 		xOff:   dims[1],
 		yOff:   dims[2],
 		width:  dims[3],
 		height: dims[4],
-	}, nil
+		coords: []tuple{},
+	}
+
+	claim.initCoordinates()
+	return claim, nil
 }
 
-func constructFabric(in io.ReadSeeker, r, c int) *fabric {
+func constructFabric(in io.ReadSeeker, r, c int, claims *map[int](*claim)) *fabric {
 	fp := newFabric(r, c)
 	s := bufio.NewScanner(in)
 
@@ -164,7 +169,9 @@ func constructFabric(in io.ReadSeeker, r, c int) *fabric {
 			log.Fatalf("day03 constructFabric: Unable to parse claims: %v", err)
 		}
 
-		fp.processClaim(cp)
+		if isCandidate := fp.processClaim(cp); isCandidate {
+			(*claims)[cp.id] = cp
+		}
 	}
 
 	if s.Err() != nil {
@@ -174,12 +181,33 @@ func constructFabric(in io.ReadSeeker, r, c int) *fabric {
 	return fp
 }
 
+func determineWinningClaim(f *fabric, claims map[int](*claim)) int {
+	var winningClaimID int
+	for id, claim := range claims {
+		noOverlap := true
+		for _, coord := range claim.coords {
+			if f.get(coord) > 1 {
+				noOverlap = false
+				break
+			}
+		}
+		if noOverlap {
+			winningClaimID = id
+			break
+		}
+	}
+	return winningClaimID
+}
+
 // having some regrets about not just reading the whole input file
 // into an array. it's not that big
 func runDay03(f io.ReadSeeker) {
+	claimCandidateRegistry := &map[int](*claim){}
 	// "The whole piece of fabric they're working on is a very large square -
 	// at least 1000 inches on each side."
-	fabric := constructFabric(f, 1000, 1000)
-
+	fabric := constructFabric(f, 1000, 1000, claimCandidateRegistry)
 	fmt.Printf("How many square inches of fabric are within two or more claims? %d\n", fabric.overlappingSquares)
+
+	winningClaimID := determineWinningClaim(fabric, *claimCandidateRegistry)
+	fmt.Printf("Winning claim id: %d", winningClaimID)
 }
