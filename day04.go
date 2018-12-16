@@ -168,5 +168,20 @@ func runDay04(f io.ReadSeeker) {
 		}
 	}
 
-	fmt.Printf("Guard #%d, sleepiest min %d -- %d", sleepiestGuard, sleepiestMin, sleepiestGuard*sleepiestMin)
+	fmt.Printf("1: Guard #%d, sleepiest min %d -- %d\n", sleepiestGuard, sleepiestMin, sleepiestGuard*sleepiestMin)
+
+	x := 0
+	sleepiestMin = 0
+	mostTimesAsleep := 0
+	for guard, mins := range guardSleepiestMins {
+		for min, sleepTimes := range mins {
+			if sleepTimes <= mostTimesAsleep {
+				continue
+			}
+			mostTimesAsleep = sleepTimes
+			sleepiestMin = min
+			x = guard
+		}
+	}
+	fmt.Printf("2: %d\n", x*sleepiestMin)
 }
