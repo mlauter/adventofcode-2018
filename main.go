@@ -16,6 +16,7 @@ var dayFuncMap = map[int]func(f io.ReadSeeker){
 	2: runDay02,
 	3: runDay03,
 	4: runDay04,
+	5: runDay05,
 }
 
 func main() {
